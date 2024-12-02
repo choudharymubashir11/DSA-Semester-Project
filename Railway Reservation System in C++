@@ -1,0 +1,520 @@
+#include<iostream>
+using namespace std;
+
+class Train{
+    
+    private:
+    
+    string name;
+    string route;
+    int Train_number;
+    int no_of_seats;
+    int booked_seats; 
+    Train* next;
+    Train* previous;
+    
+    public:
+    
+    Train(string name , string route ,int Train_number , int no_of_seats  )
+    {
+        this->name = name;
+        this->route = route;
+        this->Train_number = Train_number;
+        this->no_of_seats = no_of_seats;
+        this->booked_seats = 0;
+        this->next = NULL;
+        this->previous = NULL;
+    }
+    
+    
+    
+    string getName() 
+    {
+        return name;
+    }
+    void setName(string name) 
+    {
+        this->name = name;
+    }
+    
+    
+    
+     string getRoute() 
+    {
+        return route;
+    }
+    void setRoute(string route) 
+    {
+        this->route = route;
+    }
+
+   
+   
+   
+    int getTrainNumber() 
+    {
+        return Train_number;
+    }
+    void setTrainNumber(int Train_number)
+    {
+        this->Train_number = Train_number;
+    }
+
+
+
+
+    int getNoOfSeats() 
+    {
+        return no_of_seats;
+    }
+    void setNoOfSeats(int no_of_seats) 
+    {
+        this->no_of_seats = no_of_seats;
+    }
+    
+    
+    
+    
+    int getBookedSeats() 
+    {
+        return booked_seats;
+    }
+    void setBookedSeats(int booked_seats) 
+    {
+        this->booked_seats = booked_seats; 
+    }
+    
+    
+    
+    
+    int getAvailableSeats() 
+    {
+        return no_of_seats - booked_seats;
+    }
+
+
+
+    Train* getNext() 
+    {
+        return next;
+    }
+    void setNext(Train* next) 
+    {
+        this->next = next;
+    }
+
+
+
+    Train* getPrevious() 
+    {
+        return previous;
+    }
+    void setPrevious(Train* previous) 
+    {
+        this->previous = previous;
+    }
+    
+};
+
+
+class Railway_Reservation_System{
+    
+    private:
+    
+    Train* head;
+    
+    public:
+    
+    Railway_Reservation_System()
+    {
+        this->head = NULL;
+    }
+    
+    
+    void add_train()
+    {
+        string name;
+        string route;
+        int Train_number;
+        int no_of_seats;
+
+        cout << "Enter the name of the train : ";
+        cin >> name;
+        cout << "Enter the train route : ";
+        cin >> route;
+        cout << "Enter train number : ";
+        cin >> Train_number;
+        cout << "Enter no of seats : ";
+        cin >> no_of_seats;
+
+        Train* new_Train = new Train(name,route,Train_number,no_of_seats);
+
+        if (head == NULL)
+        {
+            head = new_Train;
+            return;
+        }
+
+        Train* temp = head;
+
+        while (temp->getNext() != NULL)
+        {
+            temp = temp->getNext();
+        }
+
+        temp->setNext(new_Train);
+        new_Train->setPrevious(temp);
+    }
+    
+    
+     void delete_train()
+    {
+        string name;
+
+        cout << "Enter the name of the train you want to remove : ";
+        cin >> name;
+
+        if (head == NULL)
+        {
+            cout << "No trains available \n";
+            return;
+        }
+
+        Train* temp = head;
+
+        while (temp != NULL && temp->getName() != name)
+        {
+            temp = temp->getNext();
+        }
+
+        // if  Train not found
+        if (temp == NULL)
+        {
+            cout << " Train not found \n";
+            return;
+        }
+
+        //  if Train is at head
+        if (temp == head)
+        {
+            head = temp->getNext();
+            if (head != NULL)
+            {
+                head->setPrevious(NULL);
+            }
+            delete temp;
+            return;
+        }
+
+        // if Train is at middle or at tail
+        if (temp->getPrevious() != NULL)
+        {
+            temp->getPrevious()->setNext(temp->getNext());
+        }
+        else if (temp->getNext() != NULL)
+        {
+            temp->getNext()->setPrevious(temp->getPrevious());
+        }
+        delete temp;
+        
+    }
+    
+    
+     void update_route()
+    {
+        if (head == NULL)
+        {
+            cout << "No Train available \n";
+            return;
+        }
+
+        string name;
+        string new_route;
+
+        cout << "Enter the name of the train whose route you want to update  : ";
+        cin >> name;
+
+        Train* temp = head;
+
+        while (temp != NULL && temp->getName() != name)
+        {
+            temp = temp->getNext();
+        }
+
+        if (temp == NULL)
+        {
+            cout << " Train not found \n";
+            return;
+        }
+        else
+        {
+            cout << "Enter the new route : ";
+            cin >> new_route;
+
+            temp->setRoute(new_route);
+            cout << "Route  updated successfully!\n";
+        }
+        
+    }
+    
+    
+    void view_trains()
+    {
+         if (head == NULL)
+        {
+            cout << "No Train available \n";
+            return;
+        }
+
+        Train* temp = head;
+
+        cout << "\n--- Trains  ---\n";
+
+        while (temp != NULL)
+        {
+            cout<<"-----------------------------------------------\n";
+            cout << "Name : " << temp->getName() <<endl;
+            cout << "Route : " << temp->getRoute() <<endl;
+            cout << "Train Number : " << temp->getTrainNumber() <<endl;
+            cout << "No of Seats : " << temp->getNoOfSeats() <<endl;
+            cout<<"-----------------------------------------------\n";
+            temp = temp->getNext();
+        }
+    }
+    
+    
+    
+    void book_seat() 
+    {
+        if (head == NULL) 
+        {
+            cout << "No trains available to book\n";
+            return;
+        }
+
+        string train_name;
+        int seats_to_book;
+
+        cout << "Enter the name of the train you want to book seats on: ";
+        cin >> train_name;
+
+        Train* temp = head;
+        while (temp != NULL && temp->getName() != train_name) 
+        {
+            temp = temp->getNext();
+        }
+
+        if (temp == NULL)
+        {
+            cout << "Train not found\n";
+            return;
+        }
+
+        cout << "Enter number of seats you want to book: ";
+        cin >> seats_to_book;
+
+        if (seats_to_book > temp->getAvailableSeats()) 
+        {
+            cout << "Not enough available seats on this train\n";
+            return;
+        }
+
+        temp->setBookedSeats(temp->getBookedSeats() + seats_to_book);
+        cout << "Successfully booked " << seats_to_book << " seats on " << train_name << endl;
+    }
+    
+    
+    
+    
+    void display_remaining_seats() 
+    {
+        if (head == NULL) 
+        {
+            cout << "No trains available to display remaining seats\n";
+            return;
+        }
+
+        string train_name;
+        
+        cout << "Enter the name of the train to check remaining seats: ";
+        cin >> train_name;
+
+        Train* temp = head;
+        
+        while (temp != NULL && temp->getName() != train_name) 
+        {
+            temp = temp->getNext();
+        }
+
+        if (temp == NULL)
+        {
+            cout << "Train not found\n";
+            return;
+        }
+
+        cout << "Remaining seats on train " << train_name << ": " << temp->getAvailableSeats() << endl;
+    }
+    
+    
+    
+    
+    
+    void LogIn()
+    {
+         string user = "Mubashir";
+         string pass = "1234";
+
+         string username;
+         string password;
+
+         cout << "Enter username : ";
+         cin >> username;
+
+         if (username == user)
+         {
+             cout << "Enter password : ";
+             cin >> password;
+             if (password == pass)
+             {
+                 cout << " Login successfully \n";
+                 Admin_Menu();
+             }
+             else
+             {
+                 cout << "Incorrect password \n";
+             }
+         }
+         else
+         {
+             cout << "Incorrect username \n";
+         }
+    }
+    
+    void Admin_Menu()
+    {
+        int choice;
+        do{
+              cout << "     Admin Menu   \n";
+
+              cout << "1) Add Train  \n";
+              cout << "2) Update Route \n";
+              cout << "3) Delete Train \n";
+              cout << "4) View Trains \n";
+              cout << "5) Exit to Main menu \n";
+
+              cout << "Enter a choice : ";
+              cin >> choice;
+              
+              switch(choice)
+              {
+                  case 1:
+                  add_train();
+                  break;
+                  
+                  case 2:
+                  update_route();
+                  break;
+                  
+                  case 3:
+                  delete_train();
+                  break;
+                  
+                  case 4:
+                  view_trains();
+                  break;
+                  
+                  case 5:
+                  cout<<" Exiting to previous menu \n";
+                  break;
+                  
+                  default:
+                  cout<<"Invalid choice \n";
+              }
+        }while(choice != 5);
+    }
+    
+    
+    
+      
+    void Customer_Menu()
+    {
+        int choice;
+        do{
+              cout << "     Customer Menu   \n";
+
+              cout << "1) View Train Informations  \n";
+              cout << "2) Book Seats \n";
+              cout << "3) Display reamaing seats  \n";
+              cout << "4) Exit to Main menu \n";
+
+              cout << "Enter a choice : ";
+              cin >> choice;
+              
+              switch(choice)
+              {
+                  case 1:
+                  view_trains();;
+                  break;
+                  
+                  case 2:
+                   book_seat() ;
+                  break;
+                  
+                  case 3:
+                  display_remaining_seats() ;
+                  break;
+                  
+                  case 4:
+                  cout<<" Exiting to previous menu \n";
+                  break;
+                  
+                  default:
+                  cout<<"Invalid choice \n";
+                  
+              }
+        }while(choice != 4);
+    }
+              
+              
+    
+    
+};
+
+
+int main()
+{
+       Railway_Reservation_System r;
+    
+    int choice;
+
+    do {
+
+        cout << "       Railway Reservation System      \n ";
+        cout << "1) Admin \n";
+        cout << "2) Customer \n";
+        cout << "3) Exit \n";
+
+        cout << "Enter choice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            r.LogIn();
+            break;
+
+        case 2:
+        r.Customer_Menu();
+            break;
+
+        case 3 :
+            cout << "Exiting the system . Goodbye! \n";
+            break;
+
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+
+    } while (choice != 3);
+
+}
